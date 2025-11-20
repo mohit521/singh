@@ -1,0 +1,39 @@
+<!-- product.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shop | Clothing Brand</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>New Arrivals</h1>
+    <input id="search" placeholder="Search products..." />
+  </header>
+  <main id="product-grid" class="grid"></main>
+  <script type="module">
+    import { api } from './js/api.js';
+    const grid = document.getElementById('product-grid');
+    async function load(q='') {
+      const products = await api(`/products?q=${encodeURIComponent(q)}`, 'GET', null, false);
+      grid.innerHTML = products.map(p => `
+        <div class="card">
+          <img src="${p.imageUrl}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <p>₹${p.price}</p>
+          <button data-id="${p.id}" class="add">Add to cart</button>
+        </div>`).join('');
+    }
+    document.getElementById('search').addEventListener('input', e => load(e.target.value));
+    grid.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('add')) {
+        const id = e.target.dataset.id;
+        await api('/cart', 'POST', { productId: Number(id), quantity: 1 });
+        alert('Added to cart');
+      }
+    });
+    load();
+  </script>
+</body>
+</html>

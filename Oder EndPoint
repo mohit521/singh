@@ -1,0 +1,24 @@
+// OrderController.java
+@RestController
+@RequestMapping("/api/orders")
+public class OrderController {
+  private final OrderService orderService;
+  private final LocationService locationService;
+
+  @PostMapping("/checkout")
+  public ResponseEntity<?> checkout(Authentication auth, @RequestBody CheckoutRequest req) {
+    Order order = orderService.createOrder(auth.getName(), req);
+    return ResponseEntity.ok(order);
+  }
+
+  @PostMapping("/{orderId}/location")
+  public ResponseEntity<?> attachLocation(Authentication auth, @PathVariable Long orderId, @RequestBody PurchaseLocationDTO loc) {
+    locationService.attachToOrder(auth.getName(), orderId, loc);
+    return ResponseEntity.ok(Map.of("status", "ok"));
+  }
+
+  @GetMapping
+  public List<Order> list(Authentication auth) {
+    return orderService.listOrders(auth.getName());
+  }
+}

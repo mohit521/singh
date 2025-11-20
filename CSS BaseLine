@@ -1,0 +1,15 @@
+/* css/styles.css */
+:root {
+  --brand: #111;
+  --accent: #cc3333;
+  --bg: #f7f7f7;
+}
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--brand); }
+header { display: flex; align-items: center; gap: 1rem; padding: 1rem 2rem; background: white; position: sticky; top: 0; border-bottom: 1px solid #eee; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; padding: 1rem 2rem; }
+.card { background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.card img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px; }
+button { background: var(--accent); color: white; border: none; padding: .8rem 1rem; border-radius: 8px; cursor: pointer; }
+button:hover { opacity: .9; }
+textarea { width: 100%; min-height: 100px; padding: .8rem; border: 1px solid #ddd; border-radius: 8px; }

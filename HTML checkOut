@@ -1,0 +1,90 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Checkout | Clothing Brand</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <main>
+    <h2>Checkout</h2>
+    <section id="cart-summary"></section>
+
+    <h3>Shipping address</h3>
+    <textarea id="address" placeholder="Full address"></textarea>
+
+    <button id="place-order">Place order</button>
+    <p id="status"></p>
+  </main>
+
+  <script type="module">
+    import { api } from './js/api.js';
+
+    async function loadCart() {
+      const items = await api('/cart', 'GET');
+      const subtotal = items.reduce((sum, it) => sum + it.quantity * it.product.price, 0);
+      document.getElementById('cart-summary').innerHTML = `
+        <ul>
+          ${items.map(it => `<li>${it.product.name} x ${it.quantity} — ₹${it.product.price}</li>`).join('')}
+        </ul>
+        <p><strong>Subtotal:</strong> ₹${subtotal.toFixed(2)}</p>`;
+      return { items, subtotal };
+    }
+
+    async function getGeo() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) return resolve(null);
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            source: 'geolocation'
+          }),
+          () => resolve(null),
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      });
+    }
+
+    async function getIp() {
+      // Server will read IP. This call is to include any server-side enrichment you add.
+      try {
+        const res = await fetch('http://localhost:8080/api/location/ip');
+        return await res.json();
+      } catch { return null; }
+    }
+
+    document.getElementById('place-order').addEventListener('click', async () => {
+      const address = document.getElementById('address').value.trim();
+      const status = document.getElementById('status');
+      status.textContent = 'Placing order...';
+
+      try {
+        const { subtotal } = await loadCart();
+        const order = await api('/orders/checkout', 'POST', {
+          shippingAddress: address,
+          totals: { subtotal, tax: subtotal * 0.12, shipping: 70, total: subtotal * 1.12 + 70 }
+        });
+
+        // Attempt geolocation first, then IP fallback
+        let loc = await getGeo();
+        if (!loc) {
+          const ip = await getIp();
+          loc = { source: 'ip', ipAddress: ip?.ip };
+        }
+
+        if (loc) {
+          await api(`/orders/${order.id}/location`, 'POST', loc);
+        }
+
+        status.textContent = 'Order placed successfully!';
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+      }
+    });
+
+    loadCart();
+  </script>
+</body>
+</html>

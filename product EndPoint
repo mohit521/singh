@@ -1,0 +1,36 @@
+// ProductController.java
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+  private final ProductService productService;
+
+  @GetMapping
+  public List<Product> list(@RequestParam Optional<String> q,
+                            @RequestParam Optional<String> category) {
+    return productService.search(q.orElse(""), category.orElse(null));
+  }
+
+  @GetMapping("/{id}")
+  public Product get(@PathVariable Long id) {
+    return productService.getById(id);
+  }
+
+  @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
+  public Product create(@RequestBody Product p) {
+    return productService.create(p);
+  }
+
+  @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public Product update(@PathVariable Long id, @RequestBody Product p) {
+    p.setId(id);
+    return productService.update(p);
+  }
+
+  @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public void delete(@PathVariable Long id) {
+    productService.delete(id);
+  }
+}

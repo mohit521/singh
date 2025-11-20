@@ -1,0 +1,26 @@
+// CartController.java
+@RestController
+@RequestMapping("/api/cart")
+public class CartController {
+  private final CartService cartService;
+
+  @GetMapping
+  public List<CartItem> getCart(Authentication auth) {
+    return cartService.listItems(auth.getName());
+  }
+
+  @PostMapping
+  public CartItem add(Authentication auth, @RequestBody CartItemRequest req) {
+    return cartService.addItem(auth.getName(), req.getProductId(), req.getQuantity());
+  }
+
+  @PutMapping("/{productId}")
+  public CartItem update(Authentication auth, @PathVariable Long productId, @RequestBody Map<String,Integer> body) {
+    return cartService.updateQuantity(auth.getName(), productId, body.get("quantity"));
+  }
+
+  @DeleteMapping("/{productId}")
+  public void remove(Authentication auth, @PathVariable Long productId) {
+    cartService.removeItem(auth.getName(), productId);
+  }
+}

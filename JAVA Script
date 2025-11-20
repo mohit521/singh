@@ -1,0 +1,14 @@
+// js/location.js
+export async function reverseGeocode(lat, lon) {
+  // You can integrate a provider (e.g., OpenCage/Mapbox) server-side for reliability and key protection.
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const data = await res.json();
+  const addr = data.address || {};
+  return {
+    city: addr.city || addr.town || addr.village,
+    state: addr.state,
+    country: addr.country
+  };
+}

@@ -1,0 +1,25 @@
+// LocationService.java
+@Service
+public class LocationService {
+  private final OrderRepository orderRepo;
+  private final UserRepository userRepo;
+  private final PurchaseLocationRepository locRepo;
+
+  public void attachToOrder(String email, Long orderId, PurchaseLocationDTO dto) {
+    User user = userRepo.findByEmail(email).orElseThrow();
+    Order order = orderRepo.findById(orderId).orElseThrow();
+    if (!order.getUser().getId().equals(user.getId())) throw new RuntimeException("Unauthorized");
+
+    PurchaseLocation loc = new PurchaseLocation();
+    loc.setOrder(order);
+    loc.setUser(user);
+    loc.setLatitude(dto.getLatitude());
+    loc.setLongitude(dto.getLongitude());
+    loc.setCity(dto.getCity());
+    loc.setState(dto.getState());
+    loc.setCountry(dto.getCountry());
+    loc.setIpAddress(dto.getIpAddress());
+    loc.setSource(dto.getSource());
+    locRepo.save(loc);
+  }
+}

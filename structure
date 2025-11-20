@@ -1,0 +1,61 @@
+clothing-store/
+├─ backend/
+│  ├─ src/main/java/com/brand/store/
+│  │  ├─ StoreApplication.java
+│  │  ├─ config/
+│  │  │  ├─ SecurityConfig.java
+│  │  │  ├─ JwtAuthFilter.java
+│  │  ├─ auth/
+│  │  │  ├─ AuthController.java
+│  │  │  ├─ JwtUtil.java
+│  │  │  ├─ UserDetailsServiceImpl.java
+│  │  ├─ product/
+│  │  │  ├─ ProductController.java
+│  │  │  ├─ ProductService.java
+│  │  │  ├─ ProductRepository.java
+│  │  │  ├─ Product.java
+│  │  ├─ cart/
+│  │  │  ├─ CartController.java
+│  │  │  ├─ CartService.java
+│  │  │  ├─ CartItem.java
+│  │  ├─ order/
+│  │  │  ├─ OrderController.java
+│  │  │  ├─ OrderService.java
+│  │  │  ├─ Order.java
+│  │  │  ├─ OrderItem.java
+│  │  ├─ location/
+│  │  │  ├─ LocationController.java
+│  │  │  ├─ PurchaseLocation.java
+│  │  ├─ user/
+│  │  │  ├─ UserController.java
+│  │  │  ├─ UserService.java
+│  │  │  ├─ UserRepository.java
+│  │  │  ├─ User.java
+│  │  ├─ common/
+│  │  │  ├─ ApiResponse.java
+│  │  │  ├─ exceptions/
+│  │  │  │  ├─ GlobalExceptionHandler.java
+│  ├─ src/main/resources/
+│  │  ├─ application.yml
+│  │  ├─ schema.sql
+│  │  ├─ data.sql
+│  ├─ pom.xml
+└─ frontend/
+   ├─ index.html
+   ├─ product.html
+   ├─ cart.html
+   ├─ checkout.html
+   ├─ orders.html
+   ├─ login.html
+   ├─ signup.html
+   ├─ admin.html
+   ├─ css/
+   │  ├─ styles.css
+   ├─ js/
+      ├─ api.js
+      ├─ auth.js
+      ├─ products.js
+      ├─ cart.js
+      ├─ checkout.js
+      ├─ location.js
+      ├─ ui.js

@@ -1,0 +1,53 @@
+// OrderService.java
+@Service
+public class OrderService {
+  private final UserRepository userRepo;
+  private final CartRepository cartRepo;
+  private final ProductRepository productRepo;
+  private final OrderRepository orderRepo;
+  private final OrderItemRepository orderItemRepo;
+
+  @Transactional
+  public Order createOrder(String email, CheckoutRequest req) {
+    User user = userRepo.findByEmail(email).orElseThrow();
+    List<CartItem> items = cartRepo.findByUserId(user.getId());
+    if (items.isEmpty()) throw new RuntimeException("Cart is empty");
+
+    Order order = new Order();
+    order.setUser(user);
+    order.setShippingAddress(req.getShippingAddress());
+    // Calculate totals
+    BigDecimal subtotal = items.stream()
+      .map(it -> it.getProduct().getPrice().multiply(BigDecimal.valueOf(it.getQuantity())))
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal tax = subtotal.multiply(BigDecimal.valueOf(0.12)); // GST example
+    BigDecimal shipping = BigDecimal.valueOf(70);
+    BigDecimal total = subtotal.add(tax).add(shipping);
+
+    order.setSubtotal(subtotal);
+    order.setTax(tax);
+    order.setShipping(shipping);
+    order.setTotal(total);
+    order.setStatus("PAID"); // set to PAID after payment gateway confirmation
+    orderRepo.save(order);
+
+    for (CartItem ci : items) {
+      OrderItem oi = new OrderItem();
+      oi.setOrder(order);
+      oi.setProduct(ci.getProduct());
+      oi.setProductName(ci.getProduct().getName());
+      oi.setUnitPrice(ci.getProduct().getPrice());
+      oi.setQuantity(ci.getQuantity());
+      orderItemRepo.save(oi);
+
+      // Decrement stock
+      Product p = ci.getProduct();
+      p.setStock(p.getStock() - ci.getQuantity());
+      productRepo.save(p);
+    }
+
+    // Clear cart
+    cartRepo.deleteAll(items);
+    return order;
+  }
+}

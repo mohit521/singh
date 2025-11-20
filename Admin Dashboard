@@ -1,0 +1,36 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin | Analytics</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <main>
+    <h2>Sales by city/state</h2>
+    <table id="loc-table">
+      <thead><tr><th>Order ID</th><th>City</th><th>State</th><th>Country</th><th>Lat</th><th>Lon</th><th>Source</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </main>
+  <script type="module">
+    import { api } from './js/api.js';
+    async function load() {
+      const orders = await api('/admin/orders', 'GET'); // implement admin endpoint
+      const tbody = document.querySelector('#loc-table tbody');
+      tbody.innerHTML = orders.flatMap(o => (o.location ? [o] : []))
+        .map(o => `<tr>
+          <td>${o.id}</td>
+          <td>${o.location.city || ''}</td>
+          <td>${o.location.state || ''}</td>
+          <td>${o.location.country || ''}</td>
+          <td>${o.location.latitude || ''}</td>
+          <td>${o.location.longitude || ''}</td>
+          <td>${o.location.source}</td>
+        </tr>`).join('');
+    }
+    load();
+  </script>
+</body>
+</html>

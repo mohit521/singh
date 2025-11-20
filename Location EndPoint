@@ -1,0 +1,13 @@
+// LocationController.java
+@RestController
+@RequestMapping("/api/location")
+public class LocationController {
+
+  @GetMapping("/ip")
+  public Map<String, Object> byIp(HttpServletRequest req) {
+    String ip = req.getHeader("X-Forwarded-For");
+    if (ip == null) ip = req.getRemoteAddr();
+    // Optional: call a GeoIP service (server-side) to resolve city/state/country.
+    return Map.of("ip", ip);
+  }
+}
